@@ -29,7 +29,26 @@ class HopSkipJump:
 	def _approximate_gradient(current_image, initial_input, num_evals, target):
 		shape = list(current_image.size())
 		shape[0] = num_evals
-		noise = torch.randn()
+		noise = torch.randn(shape)
+		perturbed_sample = self._clip(current_sample.clone().detach() + delta * noise)
+		noise = (perturbed_sample - current_sample) / delta
+		decisions = self._validate_sample(perturbed)
+		output_shape = decisions.size()
+
+		fval = 2 * torch.reshape(decisions.float(), output_shape) - 1.0
+		broadcast_dest = [1] * len(noise.size())
+		broadcast_dest[0] = -1
+		fval = torch.broadcast_to(fval.reshape(broadcast_dest), noise.size())
+		if (int(torch.mean(fval)) == 1):
+			gradf = torch.mean(noise, dim = 0)
+		elif (int(torch.mean(fval)) == -1):
+			gradf = - torch.mean(noise, dim = 0)
+		else:
+			fval = fval.detach().clone() - torch.mean(fval)
+		gradf = torch.mean(fval * noise, dim = 0)
+
+	gradf = gradf / (torch.linalg.norm(gradf) + self.stabilizer)
+	return gradf
 
 
 	def _compute_delta(self, current_image, initial_input, first_iter):
@@ -59,7 +78,7 @@ class HopSkipJump:
 
 
 
-	def _validate_sample(self):
+	def _validate_sample(self, adjusted_input):
 		model_output = self.model_query_fn(adjusted_input)
 		return torch.where(model_output == self.target, 1, 0)
 
