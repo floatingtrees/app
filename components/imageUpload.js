@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import TextInput from './text_box';
 
 const ImageUploader = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -6,6 +7,12 @@ const ImageUploader = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [oldCategory, setOldCategory] = useState('unknown');
   const [newCategory, setNewCategory] = useState('unknown');
+  const [desiredClass, setDesiredClass] = useState('');
+
+
+  const refreshText = (e) => {
+    setDesiredClass(e.target.value);
+  }
 
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
@@ -22,6 +29,10 @@ const ImageUploader = () => {
     formData.append('file', selectedImage);
 
     try {
+      const response2 = await fetch('/api/send-classes', {
+        method: 'POST',
+        body: desiredClass,
+      });
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
@@ -51,6 +62,11 @@ const ImageUploader = () => {
       <button type='submit'>Upload Image</button>
       
     </div>
+    <div style={{margin: '30px', display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+     <TextInput onChange={desiredClass, refreshText}/> 
+     </div>
+
+
     <div style={{margin: '50px', display: 'flex',  justifyContent:'center', alignItems:'center'}}>
       <img src={imageSrc} alt="Fetched from Server"/>
     </div>

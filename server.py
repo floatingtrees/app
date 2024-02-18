@@ -7,6 +7,11 @@ import FGSM, generate
 import base64
 import torch
 
+global primary
+global desired_class_2
+
+
+
 model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet18', pretrained=True)
 model.eval()
 app = Flask(__name__)
@@ -31,7 +36,6 @@ def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-global primary
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -47,7 +51,11 @@ def upload_file():
       filename = secure_filename(file.filename)
       save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
       file.save(save_path)
-      old_category, new_category = generate.generate(model, save_path, label = None)
+      try:
+         wanted_class = desired_class_2
+      except:
+         wanted_class = None
+      old_category, new_category = generate.generate(model, save_path, label = None, string_label = wanted_class)
 
       image_path = 'uploads/image.png'
     # Ensure the image path is correct and accessible
@@ -59,10 +67,13 @@ def upload_file():
 
    return jsonify({'message': 'File type not allowed'}), 400
 
-@app.route('/retrieve-image', methods=['POST'])
-def retrieve_image():
-   print("HI")
-   return jsonify(primary), 200
+@app.route('/send-classes', methods=['POST'])
+def recieve_class():
+   desired_class = request.data.decode('utf-8')
+   print(desired_class)
+   global desired_class_2
+   desired_class_2 = desired_class
+   return jsonify("Placeholder"), 200
 
 if __name__ == '__main__':
    app.run(debug=True, port=5001, host="0.0.0.0")
