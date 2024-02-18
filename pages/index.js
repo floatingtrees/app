@@ -1,4 +1,5 @@
    import { useState } from 'react';
+   import ImageUploader from '../components/imageUpload'
 
    export default function HomePage() {
      const [message, setMessage] = useState('');
@@ -22,8 +23,10 @@
 
      return (
        <div>
+       <ImageUploader/>
          <button onClick={fetchData}>Fetch Data from Flask</button>
          <p>{message}</p>
        </div>
      );
    }
+
