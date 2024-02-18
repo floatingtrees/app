@@ -23,6 +23,7 @@ const ImageUploader = () => {
         method: 'POST',
         body: formData,
       });
+      console.log(response)
 
       if (response.ok) {
         setMessage("Success");
@@ -39,6 +40,7 @@ const ImageUploader = () => {
     <form onSubmit={uploadImage}>
       <input type='file' onChange={handleImageChange} accept='image/*' />
       <button type='submit'>Upload Image</button>
+
       <p>{message}</p>
     </form>
   );

@@ -3,8 +3,11 @@ from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename
 from PIL import Image
+import FGSM, generate
+import torch
 
-
+model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet18', pretrained=True)
+model.eval()
 app = Flask(__name__)
 CORS(app)
 
@@ -30,22 +33,22 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    # Check if the post request has the file part
-    print(request.files)
-    if 'file' not in request.files:
-        return jsonify({'message': 'No file part'}), 401
-    file = request.files['file']
-    # If user does not select file, browser also
-    # submit an empty part without filename
-    if file.filename == '':
-        return jsonify({'message': 'No selected file'}), 402
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(save_path)
-        return jsonify({'message': 'File uploaded successfully', 'path': save_path}), 200
+   # Check if the post request has the file part
+   if 'file' not in request.files:
+        return jsonify({'message': 'No file part'}), 400
+   file = request.files['file']
+   # If user does not select file, browser also
+   # submit an empty part without filename
+   if file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+   if file and allowed_file(file.filename):
+      filename = secure_filename(file.filename)
+      save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+      file.save(save_path)
+      old_category, new_category = generate.generate(model, save_path, label = None)
+      return jsonify({'message': 'File uploaded successfully', 'path': "uploads/image.png", "old_category" : old_category, "new_category" : new_category}), 200
 
-    return jsonify({'message': 'File type not allowed'}), 403
+   return jsonify({'message': 'File type not allowed'}), 400
 
 
 if __name__ == '__main__':
