@@ -42,7 +42,6 @@ def targeted_attack2(model, image, label, from_logits = True, loss_fn = torch.nn
 		loss = loss_fn(outputs, labels)
 		loss.backward()
 		optimizer.step()
-
 	return data
 
 def FGSM_attack(model, dataloader, total_batches, from_logits = True, loss_fn = torch.nn.CrossEntropyLoss(), epsilon = 0.001):
