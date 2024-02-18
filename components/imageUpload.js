@@ -4,8 +4,8 @@ const ImageUploader = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [message, setMessage] = useState('');
   const [imageSrc, setImageSrc] = useState(null);
-  const [oldCategory, setOldCategory] = useState('');
-  const [newCategory, setNewCategory] = useState('');
+  const [oldCategory, setOldCategory] = useState('unknown');
+  const [newCategory, setNewCategory] = useState('unknown');
 
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
@@ -54,6 +54,11 @@ const ImageUploader = () => {
     <div style={{margin: '50px', display: 'flex',  justifyContent:'center', alignItems:'center'}}>
       <img src={imageSrc} alt="Fetched from Server"/>
     </div>
+    <div style={{margin: '10px', display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+    <p style={{ marginRight: '20px', display: 'inline-block' }}> Previous: {oldCategory}   </p> 
+    <p style={{ marginLeft: '20px', display: 'inline-block' }}> Now: {newCategory} </p>
+    </div>
+     
     </form>
     
 

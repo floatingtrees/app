@@ -18,7 +18,7 @@
 
      return (
        <div>
-       <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}> <p style={{ fontSize: '24px' }}> Protect your artwork from Web Scrapers </p> </div>
+       <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}> <p style={{ fontSize: '24px' }}> Protect your Artwork from Web Scrapers </p> </div>
        <ImageUploader/>
          
        </div>
